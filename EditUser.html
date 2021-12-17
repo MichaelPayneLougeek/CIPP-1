@@ -11,7 +11,7 @@
                             </h1>
                         </div>
                         <div class="col-12 col-xl-auto mb-3">
-                            <a class="btn btn-sm btn-light text-primary" href="index.html?page=users">
+                            <a class="btn btn-sm btn-light text-primary back-to-users" href="index.html?page=users">
                                 <i class="me-1" data-feather="arrow-left"></i>
                                 Back to Users
                             </a>
@@ -123,12 +123,17 @@
 
                             </div>
                             <div class="mb-3">
-                                <label class="small mb-1" for="AddedAliasses">Add
-                                    aliasses</label>
-                                <textarea name="AddedAliasses" class="form-control" id="AddedAliasses" type="email"
+                                <label class="small mb-1" for="AddedAliases">Add
+                                    Aliases</label>
+                                <textarea name="AddedAliases" class="form-control" id="AddedAliases" type="email"
                                     placeholder="Enter one alias per line, leave blank if no changes are to be made."
                                     value=""></textarea>
                             </div> <!-- Submit button-->
+                            <div class="mb-3">
+                                <label class="small mb-1" for="Jobtitle">Job title</label>
+                                <input class="form-control" id="Jobtitle" placeholder="Enter the job title" value=""
+                                    name="Jobtitle" />
+                            </div>
                             <div class="row gx-3 mb-3">
                                 <!-- Form Group (first name)-->
                                 <div class="col-md-6">
@@ -188,7 +193,17 @@
                                     <input class="form-control" id="BusinessPhone" type="text"
                                         placeholder="Business #..." value="" name="BusinessPhone" />
                                 </div>
+                                <div class="col-mb-3">
+                                    <label class="small mb-1" for="UserlistOptions">Copy group membership from other
+                                        user</label>
+                                    <input class="form-control" name="CopyFrom" list="UserlistOptions" id="Userlist"
+                                        placeholder="Leave blank to not copy.">
+                                    <datalist id="UserlistOptions">
+                                    </datalist>
+                                </div>
+
                             </div>
+
                             <button class="btn btn-primary" onclick='PostForm("Userform","api/EditUser")'' type="button">Edit User</button>
 
                         </div>
@@ -236,3 +251,4 @@
         </div>
 </main>
 <script src="js/UserFormOptions.js"></script>
+<script src="js/Userlist.js"></script>

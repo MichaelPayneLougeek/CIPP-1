@@ -1,8 +1,12 @@
+var tenants = [];
 $(document).ready(function () {
     let searchParams = new URLSearchParams(window.location.search)
+    var tenantSelectID = '';
     if (searchParams.has('Tenantfilter')) {
-        var TenantID = searchParams.get('Tenantfilter')
-        $("#exampleDataList").val(TenantID);
+        tenantSelectID = searchParams.get('Tenantfilter')
+    } else {
+        $(":text").prop("disabled", true);
+        $("#exampleDataList").prop("disabled", false);
     }
 
     var dataList = document.getElementById('datalistOptions');
@@ -11,33 +15,48 @@ $(document).ready(function () {
         'global': false,
         'url': 'api/ListTenants',
         'dataType': "json",
+        'beforeSend': function () {
+            $("#exampleDataList").val('Loading tenants...');
+        },
         'success': function (data) {
             data.forEach(function (item) {
+                tenants.push(item);
+                $("#exampleDataList").prop("disabled", false);
                 var option = document.createElement('option');
-
-                option.value = item.displayName;
-                option.text = item.defaultDomainName;
+                option.value = item.defaultDomainName;
+                option.text = item.displayName;
                 dataList.appendChild(option);
+                if (tenantSelectID !== '') {
+                    $("#exampleDataList").val(tenantSelectID);
+                } else {
+                    $("#exampleDataList").val('');
+                }
             });
+        },
+        'error': function (xhr, ajaxOptions, thrownError) {
+            $("#exampleDataList").val('Could not load tenants: Failed to connect to API:' + thrownError);
+            $("#exampleDataList").prop("disabled", false);
         }
     });
 
+    //added datatable error handling here instead of editing all the files
+    $.fn.dataTable.ext.errMode = function(settings, helpPage, message) {
+        $("#AccountTable tr td").text("Error!");
+        $("#toasty .toast-body").text("An error occured. Please review the log.");
+        $("#toasty").toast("show");
+    }
 });
 
 function onInput() {
+    let searchParams = new URLSearchParams(window.location.search);
     var val = document.getElementById("exampleDataList").value;
-    var opts = document.getElementById('datalistOptions').childNodes;
-    for (var i = 0; i < opts.length; i++) {
-        if (opts[i].value === val) {
-            let searchParams = new URLSearchParams(window.location.search)
-            if (searchParams.has('Tenantfilter')) {
-                var href = new URL(window.location.href)
-                href.searchParams.set('Tenantfilter', opts[i].text);
-                window.location.href = href.toString()
-            } else {
-                window.location.href = window.location.href + "&Tenantfilter=" + opts[i].text;
-            }
-        }
+    var existingTenant = tenants.filter(obj => {
+        return obj.defaultDomainName == val;
+    });
+
+    if(existingTenant.length > 0) {
+        history.pushState(null, null, '?page='+ searchParams.get('page') + '&Tenantfilter=' + existingTenant[0].defaultDomainName);
+        $('#bodycontent').load(searchParams.get('page') + '.html');
     }
 }
 

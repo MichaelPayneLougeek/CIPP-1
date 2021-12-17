@@ -1,7 +1,6 @@
 
 $(document).ready(function () {
-
-
+    var todayDate = new Date().toISOString().slice(0, 10);
     var oTable = $('.datatable-1').dataTable(
         {
             language: {
@@ -17,7 +16,7 @@ $(document).ready(function () {
                     "visible": false,
                     "searchable": true,
                 },
-                { "className": "dt-center", "targets": [2, 3, 4, 5, 6, 7] },
+                { "className": "dt-center", "targets": [2, 3, 4, 5, 6, 7, 8] },
 
             ],
             "deferRender": true,
@@ -29,10 +28,10 @@ $(document).ready(function () {
             },
             dom: 'fBlrtip',
             buttons: [
-                { extend: 'copyHtml5', className: 'btn btn-primary' },
-                { extend: 'excelHtml5', className: 'btn btn-primary' },
-                { extend: 'csvHtml5', className: 'btn btn-primary' },
-                { extend: 'pdfHtml5', className: 'btn btn-primary' },
+                { extend: 'copyHtml5', className: 'btn btn-primary btn-sm' },
+                { extend: 'excelHtml5', className: 'btn btn-primary btn-sm', title: 'Tenant Management List - ' + todayDate, exportOptions: {columns: [ 0,1 ]}   },
+                { extend: 'csvHtml5', className: 'btn btn-primary btn-sm', title: 'Tenant Management List - ' + todayDate, exportOptions: {columns: [ 0,1 ]}  },
+                { extend: 'pdfHtml5', className: 'btn btn-primary btn-sm', orientation: 'landscape', title: 'Tenant Management List - ' + todayDate, exportOptions: {columns: [ 0,1 ]} },
             ],
             "columns": [
                 { "data": "displayName" },
@@ -61,8 +60,14 @@ $(document).ready(function () {
                     "data": "defaultDomainName",
                     render: function (defaultDomainName, type, row) { return '<a target="_blank" href="https://endpoint.microsoft.com/' + defaultDomainName + '"><i class="fas fa-cog fa-fw"></i></a>' }
                 },
+                {
+                    "data": "defaultDomainName",
+                    render: function (defaultDomainName, type, row) { return '<a href=index.html?page=EditTenant' + '&Tenantfilter=' + defaultDomainName + '><i class="fas fa-cog fa-fw"></i></a>'; }
+                },
+                { 
+                    "data": "domains" 
+                }
 
-                { "data": "domains" }
 
             ],
             "order": [[0, "asc"]],

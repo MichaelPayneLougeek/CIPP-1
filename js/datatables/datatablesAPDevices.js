@@ -3,6 +3,7 @@ $(document).ready(function () {
     if (searchParams.has('Tenantfilter')) {
         var TenantID = searchParams.get('Tenantfilter')
     }
+    var todayDate = new Date().toISOString().slice(0, 10);
     $('.datatable-1').dataTable(
         {
             language: {
@@ -25,10 +26,10 @@ $(document).ready(function () {
             },
             dom: 'fBlrtip',
             buttons: [
-                { extend: 'copyHtml5', className: 'btn btn-primary' },
-                { extend: 'excelHtml5', className: 'btn btn-primary' },
-                { extend: 'csvHtml5', className: 'btn btn-primary' },
-                { extend: 'pdfHtml5', className: 'btn btn-primary' },
+                { extend: 'copyHtml5', className: 'btn btn-primary btn-sm' },
+                { extend: 'excelHtml5', className: 'btn btn-primary btn-sm', title: 'Autopilot Device List - ' + TenantID + " - " + todayDate, exportOptions: { columns: [0, 1, 2, 3, 4] } },
+                { extend: 'csvHtml5', className: 'btn btn-primary btn-sm', title: 'Autopilot Device List - ' + TenantID + " - " + todayDate, exportOptions: { columns: [0, 1, 2, 3, 4] } },
+                { extend: 'pdfHtml5', className: 'btn btn-primary btn-sm', orientation: 'landscape', title: 'Autopilot Device List - ' + TenantID + " - " + todayDate, exportOptions: { columns: [0, 1, 2, 3, 4] } },
             ],
             "columns": [
                 { "data": "serialNumber" },
@@ -38,7 +39,7 @@ $(document).ready(function () {
                 { "data": "enrollmentState" },
                 {
                     "data": "id",
-                    render: function (id, type, row) { return '<nothing class="APILink"><a href=api/RemoveAPDevice?TenantFilter=' + TenantID + '&ID=' + id + '><i data-bs-toggle="tooltip" data-bs-placement="top" title="Remove AP Device" class="fas fa-trash fa-fw"></i>'; }
+                    render: function (id, type, row) { return '<nothing class="APILink"><a actionname="remove ' + row.serialNumber + ' from autopilot devices" href=api/RemoveAPDevice?TenantFilter=' + TenantID + '&ID=' + id + '><i data-bs-toggle="tooltip" data-bs-placement="top" title="Remove AP Device" class="fas fa-trash fa-fw"></i>'; }
                 }
             ],
             "order": [[0, "asc"]],

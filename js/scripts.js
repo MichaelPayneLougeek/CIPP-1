@@ -85,8 +85,15 @@ window.addEventListener('DOMContentLoaded', event => {
     });
     //API GET call + modal pop-up
     $(document.body).on('click', '.APILink a', function (e) {
-        $('#APIContent').html('<div class="spinner-border text-primary" role="status"><span class="sr-only"></span></div></span>');
+        $('#APIContent').html('<label class="form-check-label" >Are you sure you want to ' + $(this).attr('actionname') + '?</label><br><nothing class="APIConfirmed"><a href="' + $(this).attr('href') + '"><button id="Confirmed" class="btn btn-primary APIConfirmed">Yes</button></a></nothing><nothing class="APIDenied">  <button data-bs-dismiss="modal" class="btn btn-primary APIDenied">No</button>');
         e.preventDefault();
+        document.getElementById("PopModal").click();
+    });
+
+
+    $(document.body).on('click', '.APIConfirmed a', function (e) {
+        e.preventDefault();
+        $('#APIContent').html('<div class="spinner-border text-primary" role="status"><span class="sr-only"></span></div></span>');
         var usedurl = $(this).attr('href');
         var jsonOptions = (function () {
             var json = null;
@@ -105,10 +112,11 @@ window.addEventListener('DOMContentLoaded', event => {
             });
             return json;
         })();
-        document.getElementById("PopModal").click();
     });
-
 });
+
+
+
 //retrieving form data to normal json object
 function getFormData($form) {
     var unindexed_array = $form.serializeArray();
@@ -141,5 +149,41 @@ function PostForm(FormID, PostAPI) {
         }
     });
 
+
+}
+var tries = 0;
+function GetAPIData(url, guid) {
+    return new Promise((resolve, reject) => {
+        let ajaxsettings = {
+            type: 'GET',
+            url: url + '?GUID=' + guid,
+            success: function (data) {
+                tries++;
+                if (data.Waiting) {
+                    setTimeout(function () {
+                        $.ajax(ajaxsettings);
+                    }, 5000);
+                } else {
+                    if (tries >= 60) {
+                        reject("Failed to retrieve data in 5 minutes");
+                    } else {
+                        resolve(data);
+                    }
+                }
+            }
+        }
+        $.ajax(ajaxsettings);
+    })
 }
 
+// Escape HTML entities to protect against XSS attacks.
+function escapeHTML(text) {
+    'use strict';
+    return text.replace(/[\"&'\/<>]/g, function (a) {
+        return {
+            '"': '&quot;', '&': '&amp;', "'": '&#39;',
+            '/': '&#47;',  '<': '&lt;',  '>': '&gt;'
+
+        }[a];
+    });
+}

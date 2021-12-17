@@ -1,9 +1,12 @@
 $(document).ready(function () {
     //gets the current Tenantfilter
     let searchParams = new URLSearchParams(window.location.search)
+    var TenantID = '';
     if (searchParams.has('Tenantfilter')) {
-        var TenantID = searchParams.get('Tenantfilter')
+        TenantID = searchParams.get('Tenantfilter')
     }
+    //checks if the default location has been set, and if so, use that again.
+
     //checks if a userid is present, and if so, we prefill the form.
     if (searchParams.has('UserID')) {
         var UserID = searchParams.get('UserID')
@@ -24,6 +27,7 @@ $(document).ready(function () {
                 $('#LocationDataList').val(data[0].usageLocation)
                 //extended fields
                 $('#streetAddress').val(data[0].streetAddress)
+                $('#Jobtitle').val(data[0].jobTitle)
                 $('#City').val(data[0].city)
                 $('#Country').val(data[0].country)
                 $('#CompanyName').val(data[0].companyName)
@@ -33,9 +37,13 @@ $(document).ready(function () {
                 $('#BusinessPhone').val(data[0].businessPhones)
                 // list raw information
                 $('#RawJson').text(JSON.stringify(data, null, 2))
+
             }
+
         }
+
         )
+
     }
     //only shows input when needed
     $('input[type="checkbox"]').click(function () {
@@ -56,9 +64,14 @@ $(document).ready(function () {
             option.text = item.Name;
             UsageLocationList.appendChild(option);
         });
+        var LastLocation = localStorage.getItem('DefaultLocation')
+        if (LastLocation) {
+            $('#LocationDataList').val(LastLocation)
+        }
     }).fail(function () {
         console.log("An error has occurred.");
     });
+
     //Creates licenses checkboxes
 
     (function () {
@@ -109,6 +122,19 @@ $(document).ready(function () {
         });
     })();
 
+    //append tenant in back to users
+    if (TenantID !== '') {
+        var href = $(".back-to-users").attr("href");
+        $(".back-to-users").attr("href", href + "&Tenantfilter=" + TenantID);
+    }
+    //checks if a user location has been filled in, and if so, add it as the default 
+    $("#LocationDataList").change(function () {
+        localStorage.setItem('DefaultLocation', $(this).val())
+    });
+
+    $('#inputFirstName, #inputLastName').on('input', function () {
+        $('#inputEmailAddress').val($('#inputFirstName').val() + ' ' + $('#inputLastName').val())
+
+    });
 
 });
-
